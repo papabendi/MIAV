@@ -127,7 +127,7 @@ function checkPlayer(player)
     return true
 end
 function kickPlayer(target, banBy)
-    DropPlayer(target, '[MIAV2] You were kicked by: '.. banBy.. '')
+    DropPlayer(target, '[MIAV2]: '.. banBy.. '')
 end
 function updateLog(text)
     text = '[MIAV2]: '..text
@@ -278,13 +278,19 @@ function chatMsgHandler(source,name,msg)
                 -- Ban All Cmmand
                 if sm[1] == "/banall" then
                     if sm[2] ~= nil then
-                        local target = getUserFromSource(tonumber(sm[2]))
-                        if target.wl < user.wl then
-                            setBan(target.identifier, user.name, settings.kickMsBanned)
-                            kickPlayer(target, source)
-                        else
-                            updateLog("Ban aborted, "..target.name.." [".. target.steam .."] is >= "..user.name.." ["..user.steam.."]")
-                        end
+                        if sm[3] ~= nil then                            
+                            local target = getUserFromSource(tonumber(sm[2]))
+                            local kicktarget = sm[2]
+                            local reason = string.sub(msg,9)                        
+                            if target.wl < user.wl then                                
+                                setBan(target.identifier, user.name, reason)
+                                kickPlayer(kicktarget, settings.kickMsgBanned)
+                            else                                
+                                updateLog("Ban aborted, "..target.name.." [".. target.steam .."] is >= "..user.name.." ["..user.steam.."]")
+                            end
+                        else                                                   
+                            updateLog( user.name .. " Attempted a ban without a reason, please try again")
+                        end                    
                     end
                 end
             end
